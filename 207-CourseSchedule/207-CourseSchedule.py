@@ -1,5 +1,5 @@
-# Last updated: 8/21/2025, 9:34:59 PM
-from collections import deque
+# Last updated: 8/21/2025, 9:39:14 PM
+from collections import deque, defaultdict
 class Solution:
     # numCourses
     # adjMatrix
@@ -7,22 +7,17 @@ class Solution:
     # sums
 
     def buildAdjacencyListAndQueue(self, prerequisites: List[List[int]]):
-        self.adjMatrix = [[0]*self.numCourses for i in range(self.numCourses)]
-        self.sums = [0]*self.numCourses
-        for link in prerequisites:
-            i = link[0]
-            j = link[1]
-            self.adjMatrix[i][j]=1
-        for i in range(self.numCourses):
-            self.sums[i] = sum(self.adjMatrix[i])
+        self.graph = defaultdict(list)
+        self.indegree = [0] * self.numCourses
 
+        for ai, bi in prerequisites:
+            self.graph[bi].append(ai)
+            self.indegree[ai] += 1
 
         self.noIncomingQueue = deque([])
         for i in range(self.numCourses):
-            if self.sums[i]==0:
+            if self.indegree[i]==0:
                 self.noIncomingQueue.append(i)
-
-    
     
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
 
@@ -33,12 +28,11 @@ class Solution:
         while(self.noIncomingQueue):
             node = self.noIncomingQueue.popleft()
             nodesSorted+=1
-            for i in range(self.numCourses):
-                if(self.adjMatrix[i][node]==1):
-                    self.adjMatrix[i][node]=0
-                    self.sums[i]-=1
-                    if self.sums[i]==0:
-                        self.noIncomingQueue.append(i)
+            for nei in self.graph[node]:
+                self.indegree[nei]-=1
+                if self.indegree[nei]==0:
+                    self.noIncomingQueue.append(nei)
+                    
         
 
         return nodesSorted==self.numCourses
