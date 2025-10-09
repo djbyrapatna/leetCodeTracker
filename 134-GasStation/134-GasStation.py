@@ -1,47 +1,30 @@
-# Last updated: 10/9/2025, 7:55:32 PM
+# Last updated: 10/9/2025, 7:59:21 PM
 class Solution:
     def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
 
         N = len(gas)
-        sumArr = [x-y for x, y in zip(gas, cost)]
-        total = sum(sumArr)
+        
         testArr = [0]*N
-        testArr[0] = sumArr[0]
+        testArr[0] = gas[0] - cost[0]
+        minValue = testArr[0]
+        minIndex = 0
         for i in range(1, N):
-            testArr[i] = testArr[i-1]+sumArr[i]
-        print(sumArr)
-        if total<0:
+            testArr[i] = testArr[i-1]+gas[i]-cost[i]
+            if testArr[i]<minValue:
+                minValue = testArr[i]
+                minIndex = i
+
+
+
+        if testArr[-1]<0:
             return -1
+        elif minIndex == N-1:
+            return 0
         else:
-            index = testArr.index(min(testArr))
-            if index!=N-1:
-                return index+1
-            else:
-                return 0
+            return minIndex+1
         
 
 
 
-        #brute force soln first
-        N = len(gas)
-        gas_dup = gas + gas
-        cost_dup = cost+cost
-
-        for si in range(N):
-            tank = 0
-            stationsVisited = 0
-            i = si
-            while stationsVisited < N:
-                
-                tank += gas_dup[i] - cost_dup[i]
-                if tank >=0:
-                    i+=1
-                    stationsVisited+=1
-                else:
-                    break
-            if stationsVisited == N:
-                return si
-        
-        return -1
                 
         
